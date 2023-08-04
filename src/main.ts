@@ -6,6 +6,8 @@ import { LoggerService } from './infra/logger/logger.service';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 import helmet from 'helmet';
+import { LoggingInterceptor } from './infra/common/interceptors/logger.interceptor';
+import { ResponseInterceptor } from './infra/common/interceptors/response.interceptor';
 
 async function bootstrap() {
   const env = process.env.NODE_ENV;
@@ -22,6 +24,10 @@ async function bootstrap() {
 
   // pipes
   app.useGlobalPipes(new ValidationPipe());
+
+  // interceptors
+  app.useGlobalInterceptors(new LoggingInterceptor(new LoggerService()));
+  app.useGlobalInterceptors(new ResponseInterceptor());
 
   // base routing
   app.setGlobalPrefix('v1');

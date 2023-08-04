@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 
 import { ApiExtraModels, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiResponseType } from 'src/infra/common/swagger/response.decorator';
 
 import { UseCasesProxyModule } from '../../usecases-proxy/usecases.proxy.module';
 import { UseCaseProxy } from '../../usecases-proxy/usecases.proxy';
@@ -43,6 +44,7 @@ export class UserController {
   ) {}
 
   @Get('user/:id')
+  @ApiResponseType(UserPresenter, false)
   async getUser(@Param() params: any) {
     const user = await this.getUserUsecaseProxy
       .getInstance()
@@ -52,6 +54,7 @@ export class UserController {
   }
 
   @Get('users')
+  @ApiResponseType(UserPresenter, false)
   async getUsers() {
     const users = await this.getAllUserUsecaseProxy.getInstance().execute();
 
@@ -59,6 +62,7 @@ export class UserController {
   }
 
   @Put('user/:id')
+  @ApiResponseType(UserPresenter, false)
   async updateUser(@Param() params: any, @Body() updateUserDto: UpdateUserDto) {
     await this.updateUserUsecaseProxy
       .getInstance()
@@ -68,6 +72,7 @@ export class UserController {
   }
 
   @Delete('user/:id')
+  @ApiResponseType(UserPresenter, false)
   async deleteUser(@Param() params: any) {
     await this.deleteUserUsecaseProxy.getInstance().execute(params.id);
 
@@ -75,6 +80,7 @@ export class UserController {
   }
 
   @Post('user')
+  @ApiResponseType(UserPresenter, false)
   async addUser(@Body() addUserDto: AddUserDto) {
     const userCreated = await this.addUserUsecaseProxy
       .getInstance()
