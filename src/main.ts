@@ -1,8 +1,45 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { ValidationPipe } from '@nestjs/common';
+import { AllExceptionFilter } from './infra/common/filter/exception.filter';
+import { LoggerService } from './infra/logger/logger.service';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as cookieParser from 'cookie-parser';
+import helmet from 'helmet';
 
 async function bootstrap() {
+  const env = process.env.NODE_ENV;
   const app = await NestFactory.create(AppModule);
+
+  app.enableCors({ origin: '*' });
+
+  app.use(helmet());
+
+  app.use(cookieParser());
+
+  // Filter
+  app.useGlobalFilters(new AllExceptionFilter(new LoggerService()));
+
+  // pipes
+  app.useGlobalPipes(new ValidationPipe());
+
+  // base routing
+  app.setGlobalPrefix('v1');
+
+  // swagger config
+  if (env !== 'production') {
+    const config = new DocumentBuilder()
+      .addBearerAuth()
+      .setTitle('Clean Architecture & Microservices Event Pattern Nestjs')
+      .setDescription('User Service')
+      .setVersion('1.0')
+      .build();
+    const document = SwaggerModule.createDocument(app, config, {
+      deepScanRoutes: true,
+    });
+    SwaggerModule.setup('api', app, document);
+  }
+
   await app.listen(3000);
 }
 bootstrap();
