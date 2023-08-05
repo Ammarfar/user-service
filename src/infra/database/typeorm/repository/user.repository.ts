@@ -17,7 +17,10 @@ export class TypeOrmUserRepository implements UserRepository {
     const userEntity = UserMapper.toEntity(user);
     const result = await this.userEntityRepository.insert(userEntity);
 
-    return UserMapper.toDomain(result.generatedMaps[0] as UserM);
+    return UserMapper.toDomain({
+      ...user,
+      ...(result.generatedMaps[0] as UserM),
+    });
   }
 
   async findAll(): Promise<UserM[]> {

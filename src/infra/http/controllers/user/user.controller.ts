@@ -100,10 +100,7 @@ export class UserController {
       .getInstance()
       .execute(addUserDto);
 
-    const eventPayload = {
-      user: userCreated,
-    };
-    this.trxClient.emit('user.created', eventPayload);
+    this.trxClient.emit('user.created', userCreated);
 
     return new UserPresenter(userCreated);
   }
