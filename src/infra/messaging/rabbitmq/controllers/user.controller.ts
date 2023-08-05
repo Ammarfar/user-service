@@ -13,12 +13,12 @@ export class UserController {
     private readonly updateUserBalanceUsecaseProxy: UseCaseProxy<UpdateUserBalanceUseCase>,
   ) {}
 
-  @EventPattern('user.update.balance')
+  @EventPattern('trx.created')
   async handleTransactionCreatedEvent(@Payload() payload) {
-    const { userId, balance } = payload;
+    const { userId, totalPrice } = payload;
 
     await this.updateUserBalanceUsecaseProxy
       .getInstance()
-      .execute(userId, balance);
+      .execute(userId, totalPrice);
   }
 }

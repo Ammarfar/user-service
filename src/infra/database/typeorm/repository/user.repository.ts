@@ -46,7 +46,7 @@ export class TypeOrmUserRepository implements UserRepository {
     const userEntity = await this.userEntityRepository.findOneByOrFail({
       id: id,
     });
-    userEntity.balance = balance;
+    userEntity.balance -= balance;
 
     await this.userEntityRepository.save(userEntity);
   }
