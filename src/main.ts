@@ -8,6 +8,7 @@ import * as cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { LoggingInterceptor } from './infra/common/interceptors/logger.interceptor';
 import { ResponseInterceptor } from './infra/common/interceptors/response.interceptor';
+import { Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
   const env = process.env.NODE_ENV;
@@ -46,6 +47,18 @@ async function bootstrap() {
     SwaggerModule.setup('api', app, document);
   }
 
+  // microservice
+  app.connectMicroservice({
+    transport: Transport.RMQ,
+    options: {
+      urls: process.env.RMQ_URL,
+      queue: process.env.RMQ_QUEUE,
+      queueOptions: { durable: false },
+      prefetchCount: 1,
+    },
+  });
+
+  await app.startAllMicroservices();
   await app.listen(3000);
 }
 bootstrap();

@@ -41,4 +41,13 @@ export class TypeOrmUserRepository implements UserRepository {
   async updateById(id: number, user: UserM): Promise<void> {
     await this.userEntityRepository.update({ id: id }, user);
   }
+
+  async updateBalanceById(id: number, balance: number): Promise<void> {
+    const userEntity = await this.userEntityRepository.findOneByOrFail({
+      id: id,
+    });
+    userEntity.balance = balance;
+
+    await this.userEntityRepository.save(userEntity);
+  }
 }

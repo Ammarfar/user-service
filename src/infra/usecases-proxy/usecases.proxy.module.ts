@@ -4,12 +4,13 @@ import { GetUsersUseCase } from 'src/usecases/user/getUsers.usecase';
 import { AddUserUseCase } from 'src/usecases/user/addUser.usecase';
 import { UpdateUserUseCase } from 'src/usecases/user/updateUser.usecase';
 import { deleteUserUseCase } from 'src/usecases/user/deleteUser.usecase';
+import { UpdateUserBalanceUseCase } from 'src/usecases/user/updateUserBalance.usecase';
 
-import { LoggerModule } from '../../logger/logger.module';
-import { LoggerService } from '../../logger/logger.service';
+import { LoggerModule } from '../logger/logger.module';
+import { LoggerService } from '../logger/logger.service';
 
 import { DatabaseModule } from 'src/infra/database/database.module';
-import { TypeOrmUserRepository } from '../../database/typeorm/repository/user.repository';
+import { TypeOrmUserRepository } from '../database/typeorm/repository/user.repository';
 
 import { UseCaseProxy } from './usecases.proxy';
 
@@ -22,6 +23,7 @@ export class UseCasesProxyModule {
   static POST_USER_USECASES_PROXY = 'postUserUseCasesProxy';
   static DELETE_USER_USECASES_PROXY = 'deleteUserUseCasesProxy';
   static PUT_USER_USECASES_PROXY = 'putUserUseCasesProxy';
+  static UPDATE_USER_BALANCE_USECASES_PROXY = 'updateUserBalanceUseCasesProxy';
 
   static register(): DynamicModule {
     return {
@@ -63,6 +65,17 @@ export class UseCasesProxyModule {
             userRepository: TypeOrmUserRepository,
           ) => new UseCaseProxy(new deleteUserUseCase(logger, userRepository)),
         },
+        {
+          inject: [LoggerService, TypeOrmUserRepository],
+          provide: UseCasesProxyModule.UPDATE_USER_BALANCE_USECASES_PROXY,
+          useFactory: (
+            logger: LoggerService,
+            userRepository: TypeOrmUserRepository,
+          ) =>
+            new UseCaseProxy(
+              new UpdateUserBalanceUseCase(logger, userRepository),
+            ),
+        },
       ],
       exports: [
         UseCasesProxyModule.GET_USER_USECASES_PROXY,
@@ -70,6 +83,7 @@ export class UseCasesProxyModule {
         UseCasesProxyModule.POST_USER_USECASES_PROXY,
         UseCasesProxyModule.PUT_USER_USECASES_PROXY,
         UseCasesProxyModule.DELETE_USER_USECASES_PROXY,
+        UseCasesProxyModule.UPDATE_USER_BALANCE_USECASES_PROXY,
       ],
     };
   }

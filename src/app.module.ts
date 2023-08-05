@@ -3,8 +3,9 @@ import { LoggerModule } from './infra/logger/logger.module';
 import { ExceptionsModule } from './infra/exceptions/exceptions.module';
 import { DatabaseModule } from './infra/database/database.module';
 import { ConfigModule } from '@nestjs/config';
-import { UseCasesProxyModule } from './infra/http/usecases-proxy/usecases.proxy.module';
+import { UseCasesProxyModule } from './infra/usecases-proxy/usecases.proxy.module';
 import { HttpModule } from './infra/http/http.module';
+import { MessagingModule } from './infra/messaging/messaging.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { HttpModule } from './infra/http/http.module';
     DatabaseModule,
     UseCasesProxyModule.register(),
     HttpModule,
+    MessagingModule,
   ],
 })
 export class AppModule {}
