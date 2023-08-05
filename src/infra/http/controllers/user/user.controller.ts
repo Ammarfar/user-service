@@ -25,7 +25,7 @@ import { AddUserUseCase } from 'src/usecases/user/addUser.usecase';
 import { UserPresenter } from './user.presenter';
 import { AddUserDto, UpdateUserDto } from './user.dto';
 
-@Controller()
+@Controller('users')
 @ApiTags('user')
 @ApiResponse({ status: 500, description: 'Internal error' })
 @ApiExtraModels(UserPresenter)
@@ -43,7 +43,7 @@ export class UserController {
     private readonly addUserUsecaseProxy: UseCaseProxy<AddUserUseCase>,
   ) {}
 
-  @Get('user/:id')
+  @Get('/:id')
   @ApiResponseType(UserPresenter, false)
   async getUser(@Param() params: any) {
     const user = await this.getUserUsecaseProxy
@@ -53,7 +53,7 @@ export class UserController {
     return new UserPresenter(user);
   }
 
-  @Get('users')
+  @Get('/')
   @ApiResponseType(UserPresenter, false)
   async getUsers() {
     const users = await this.getAllUserUsecaseProxy.getInstance().execute();
@@ -61,7 +61,7 @@ export class UserController {
     return users.map((user) => new UserPresenter(user));
   }
 
-  @Put('user/:id')
+  @Put('/:id')
   @ApiResponseType(UserPresenter, false)
   async updateUser(@Param() params: any, @Body() updateUserDto: UpdateUserDto) {
     await this.updateUserUsecaseProxy
@@ -71,7 +71,7 @@ export class UserController {
     return 'success';
   }
 
-  @Delete('user/:id')
+  @Delete('/:id')
   @ApiResponseType(UserPresenter, false)
   async deleteUser(@Param() params: any) {
     await this.deleteUserUsecaseProxy.getInstance().execute(params.id);
@@ -79,7 +79,7 @@ export class UserController {
     return 'success';
   }
 
-  @Post('user')
+  @Post('/')
   @ApiResponseType(UserPresenter, false)
   async addUser(@Body() addUserDto: AddUserDto) {
     const userCreated = await this.addUserUsecaseProxy
