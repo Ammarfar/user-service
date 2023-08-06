@@ -4,22 +4,27 @@ import { UserController } from './controllers/user/user.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
     UseCasesProxyModule.register(),
     CacheModule.register(),
-    ClientsModule.register([
+    ClientsModule.registerAsync([
       {
         name: 'TRX_SERVICE',
-        transport: Transport.RMQ,
-        options: {
-          urls: ['amqp://localhost:5672'],
-          queue: 'trx_queue',
-          queueOptions: {
-            durable: false,
+        imports: [ConfigModule],
+        useFactory: async (configService: ConfigService) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: [`${configService.get('RMQ_URL')}`],
+            queue: configService.get('RMQ_TRX_QUEUE'),
+            queueOptions: {
+              durable: false,
+            },
           },
-        },
+        }),
+        inject: [ConfigService],
       },
     ]),
   ],
